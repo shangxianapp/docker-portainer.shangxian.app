@@ -1,0 +1,34 @@
+pipeline {
+    agent any
+
+    options {
+        timestamps()
+    }
+
+    stages {
+        // stage('Clone') {
+        //     steps {
+        //         checkout changelog: false, poll: false, scm: [$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'shangxianapp-github-xuexb-ssh-key', url: 'git@github.com:shangxianapp/docker-portainer.shangxian.app.git']]]
+        //     }
+        // }
+
+        stage('Deploy Docker') {
+            steps {
+                sshPublisher(publishers: [sshPublisherDesc(configName: 'sg02', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: "cd $WWWROOT_DIR/docker.shangxian.app && docker-compose up -d --force-recreate", execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: "$WWWROOT_DIR/portainer.shangxian.app", remoteDirectorySDF: false, removePrefix: '', sourceFiles: 'docker-compose.yml')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: true)])
+            }
+        }
+
+        stage('Reload nginx') {
+            steps {
+                sh "mv nginx.conf portainer.shangxian.app.conf"
+                sshPublisher(publishers: [sshPublisherDesc(configName: 'sg02', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: "/bin/sh $DOCKER_NGINX_DIR/reload.sh", execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: "$DOCKER_NGINX_VHOST_DIR", remoteDirectorySDF: false, removePrefix: '', sourceFiles: 'portainer.shangxian.app.conf')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: true)])
+            }
+        }
+    }
+
+    post {
+        always {
+            deleteDir()
+        }
+    }
+}

@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  jenkins:
+    container_name: 'portainer'
+    image: 'portainer/portainer'
+    volumes:
+      - "${LOCAL_DIR}/portainer:/data"
+      - '/var/run/docker.sock:/var/run/docker.sock'
+    command: -H unix:///var/run/docker.sock
+    restart: always
+    ports:
+      - 9000:9000
+
+networks:
+  default:
+    external:
+      name: "${DOCKER_PRIVATE_NETWORK_NAME}"
