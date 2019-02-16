@@ -14,7 +14,7 @@ pipeline {
 
         stage('Deploy Docker') {
             steps {
-                sshPublisher(publishers: [sshPublisherDesc(configName: 'sg02', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: "cd $WWWROOT_DIR/docker.shangxian.app && docker-compose up -d --force-recreate", execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: "$WWWROOT_DIR/portainer.shangxian.app", remoteDirectorySDF: false, removePrefix: '', sourceFiles: 'docker-compose.yml')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: true)])
+                sshPublisher(publishers: [sshPublisherDesc(configName: 'sg02', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: "cd $WWWROOT_DIR/portainer.shangxian.app && docker-compose up -d --force-recreate", execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: "$WWWROOT_DIR/portainer.shangxian.app", remoteDirectorySDF: false, removePrefix: '', sourceFiles: 'docker-compose.yml')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: true)])
             }
         }
 
